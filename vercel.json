@@ -1,0 +1,5 @@
+{
+  "regions": ["gru1"],
+  "rewrites": [{ "source": "/", "destination": "/presentacion.html" }],
+  "headers": [{ "source": "/(.*)", "headers": [{ "key": "X-Robots-Tag", "value": "noindex, nofollow" }] }]
+}
