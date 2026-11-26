@@ -1,0 +1,818 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>¿Por qué se van los clientes? · TPI</title>
+<style>
+:root{
+  --bg:#0a0f1f; --bg2:#0f1730; --panel:#131c38; --panel2:#1a2547; --line:#28365e;
+  --txt:#eef2ff; --mut:#9fabcf; --suave:#c9d2ee;
+  --queda:#4c9be8; --va:#ff7a3d; --verde:#2dd4a7; --amarillo:#ffc857; --rojo:#ff5d6c;
+  --m:#8f7bff; --j:#22c7b8; --e:#ff6b9a;
+  --barra:54px;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:radial-gradient(1200px 700px at 15% 10%,#16224a 0%,var(--bg) 55%) fixed;color:var(--txt);
+  font-family:"Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
+button{font:inherit;color:inherit}
+#escenario{position:absolute;left:50%;width:1600px;height:900px;transform-origin:center center}
+.slide{position:absolute;inset:0;padding:64px 88px 56px;display:flex;flex-direction:column;justify-content:center;opacity:0;visibility:hidden;transform:translateX(46px);
+  transition:opacity .45s ease,transform .45s ease,visibility 0s linear .45s}
+.slide.activa{opacity:1;visibility:visible;transform:none;transition:opacity .45s ease,transform .45s ease,visibility 0s}
+.slide.atras{transform:translateX(-46px)}
+.rv{opacity:0;transform:translateY(18px)}
+.slide.activa .rv{animation:entra .65s cubic-bezier(.2,.75,.2,1) forwards;animation-delay:calc(var(--d,0) * 110ms)}
+@keyframes entra{to{opacity:1;transform:none}}
+
+.kicker{font-size:17px;letter-spacing:.18em;text-transform:uppercase;color:var(--mut);font-weight:600}
+h1{font-size:84px;line-height:1.02;margin:10px 0 18px;font-weight:800;letter-spacing:-.02em}
+h2{font-size:50px;line-height:1.08;margin:8px 0 26px;font-weight:800;letter-spacing:-.015em}
+h3{font-size:24px;margin:0 0 10px}
+p{margin:0}
+.mut{color:var(--mut)} .va{color:var(--va)} .queda{color:var(--queda)} .verde{color:var(--verde)}
+.grad{background:linear-gradient(90deg,#fff 0%,#c3cdfa 55%,var(--va) 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+.orador{position:absolute;top:30px;right:88px;display:flex;gap:8px;align-items:center;font-size:15px;color:var(--mut)}
+.chip{display:inline-flex;align-items:center;gap:8px;padding:6px 14px 6px 8px;border-radius:99px;background:var(--panel);border:1px solid var(--line);color:var(--txt);font-weight:600}
+.chip i{width:22px;height:22px;border-radius:50%;display:inline-grid;place-items:center;font-style:normal;font-size:12px;color:#0a0f1f;font-weight:800}
+.M i{background:var(--m)} .J i{background:var(--j)} .E i{background:var(--e)}
+.tag{display:inline-block;padding:5px 12px;border-radius:8px;font-size:15px;font-weight:700;letter-spacing:.04em}
+
+.fila{display:flex;gap:28px}
+.col{flex:1;min-width:0}
+.card{background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line);border-radius:22px;padding:26px 28px}
+.big{font-size:64px;font-weight:800;line-height:1;letter-spacing:-.02em}
+.mid{font-size:40px;font-weight:800;line-height:1}
+.leyenda{font-size:17px;color:var(--mut);margin-top:8px;line-height:1.4}
+.texto{font-size:22px;line-height:1.5;color:var(--suave)}
+.fig{background:#fff;border-radius:18px;padding:10px;box-shadow:0 20px 50px rgba(0,0,0,.35)}
+.fig img{display:block;width:100%;height:auto;border-radius:10px}
+.tabs{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+.tab{padding:9px 18px;border-radius:12px;background:var(--panel);border:1px solid var(--line);cursor:pointer;font-size:17px;font-weight:600;color:var(--suave);transition:.2s}
+.tab:hover{border-color:#4a5b8f}
+.tab.sel{background:var(--txt);color:#0a0f1f;border-color:var(--txt)}
+
+/* barras */
+.barras{position:relative;padding:6px 0 4px}
+.b-fila{display:grid;grid-template-columns:270px 1fr 96px;align-items:center;gap:16px;margin:14px 0}
+.b-et{font-size:20px;color:var(--suave);text-align:right}
+.b-pista{position:relative;height:34px;background:#0e1631;border-radius:10px;overflow:visible}
+.b-rel{height:100%;border-radius:10px;transform-origin:left center;animation:crece .9s cubic-bezier(.2,.75,.2,1) both}
+@keyframes crece{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.b-val{font-size:22px;font-weight:800}
+.b-base{position:absolute;top:-8px;bottom:-8px;width:0;border-left:2px dashed #e6ecff88;pointer-events:none}
+.b-base span{position:absolute;top:-24px;left:-60px;width:120px;text-align:center;font-size:14px;color:var(--mut)}
+
+/* pie de página */
+#pie{position:fixed;left:0;right:0;bottom:0;height:var(--barra);display:flex;align-items:center;justify-content:space-between;padding:0 18px;
+  background:rgba(8,12,26,.88);border-top:1px solid var(--line);backdrop-filter:blur(8px);z-index:20;font-size:14px;color:var(--mut)}
+#progreso{position:fixed;left:0;bottom:var(--barra);height:3px;background:linear-gradient(90deg,var(--m),var(--j),var(--e));width:0;transition:width .4s;z-index:21}
+.pie-izq,.pie-der{display:flex;align-items:center;gap:14px;min-width:330px}
+.pie-der{justify-content:flex-end}
+#contador{font-weight:700;color:var(--txt);font-variant-numeric:tabular-nums}
+.nav{width:30px;height:30px;border-radius:9px;border:1px solid var(--line);background:var(--panel);cursor:pointer;display:grid;place-items:center}
+.nav:hover{border-color:#4a5b8f}
+#oradores{display:flex;gap:8px}
+.orb{display:flex;align-items:center;gap:7px;padding:4px 12px 4px 5px;border-radius:99px;background:var(--panel);border:1px solid var(--line);cursor:pointer;font-size:13px;font-weight:600;color:var(--suave);position:relative;transition:.2s}
+.orb i{width:20px;height:20px;border-radius:50%;display:grid;place-items:center;font-style:normal;font-size:11px;font-weight:800;color:#0a0f1f}
+.orb.M i{background:var(--m)} .orb.J i{background:var(--j)} .orb.E i{background:var(--e)}
+.orb.activo{color:#fff;border-color:currentColor}
+.orb.M.activo{color:var(--m);box-shadow:0 0 0 3px #8f7bff33,0 0 18px #8f7bff66}
+.orb.J.activo{color:var(--j);box-shadow:0 0 0 3px #22c7b833,0 0 18px #22c7b866}
+.orb.E.activo{color:var(--e);box-shadow:0 0 0 3px #ff6b9a33,0 0 18px #ff6b9a66}
+.orb .toca{position:absolute;top:-3px;right:-3px;width:9px;height:9px;border-radius:50%;background:var(--amarillo);display:none;box-shadow:0 0 8px var(--amarillo)}
+.orb.letoca .toca{display:block}
+
+/* resalte de lo que se señala: al pasar el mouse (quien presenta) y en vivo en las pantallas que miran.
+   Se usan las propiedades translate y scale, que no chocan con la animación de entrada (transform). */
+:is(.card,.big,.mid,.b-fila,.formula,.cinta,.tag,.check,.dona,.gauge,.fig,.hip,.paso,.m-cel,.tab,.split > div){transition:translate .18s ease,scale .18s ease,box-shadow .18s ease,background-color .18s ease,text-shadow .18s ease,border-color .18s ease}
+.card:hover,.card.resalte,.fig:hover,.fig.resalte,.formula:hover,.formula.resalte,.hip:hover,.hip.resalte,.check:hover,.check.resalte,.cinta:hover,.cinta.resalte,.tag:hover,.tag.resalte,.dona:hover,.dona.resalte,.gauge:hover,.gauge.resalte,.split > div:hover,.split > div.resalte{box-shadow:0 0 0 2px var(--amarillo),0 14px 34px rgba(0,0,0,.45);translate:0 -3px}
+.b-fila:hover,.b-fila.resalte{background:rgba(255,200,87,.10);box-shadow:0 0 0 2px rgba(255,200,87,.55);border-radius:12px}
+.big,.mid{transform-origin:left center}
+.big:hover,.big.resalte,.mid:hover,.mid.resalte{text-shadow:0 0 24px rgba(255,200,87,.6);scale:1.06}
+.tabla tr:hover td,.tabla tr.resalte td{background:rgba(255,200,87,.13)}
+.tab:hover,.tab.resalte{border-color:var(--amarillo)}
+.paso.resalte{border-color:#5a6ca3;translate:0 -3px}
+.m-cel.resalte{scale:1.03;border-color:#fff}
+.tab:active,.hip:active,.paso:active,.m-cel:active{scale:.97}
+
+/* sala compartida: quien no tiene el control solo mira */
+body.espectador #escenario{pointer-events:none}
+body.espectador #ant,body.espectador #sig{opacity:.35;pointer-events:none}
+#estado-sala{font-size:13px;color:var(--suave);white-space:nowrap}
+body.invitado .orb{pointer-events:none}
+#cursor-remoto{position:absolute;left:0;top:0;z-index:60;pointer-events:none;opacity:0;transition:opacity .25s,transform .12s linear;--cur:var(--m)}
+#cursor-remoto.v{opacity:1}
+#cursor-remoto svg{display:block;width:30px;height:30px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.6))}
+#cursor-remoto span{position:absolute;left:26px;top:22px;padding:3px 10px;border-radius:99px;background:var(--cur);color:#0a0f1f;font-size:16px;font-weight:800;white-space:nowrap}
+
+/* específicos */
+.equipo{display:flex;gap:14px;margin-top:34px}
+.equipo .chip{font-size:20px;padding:8px 18px 8px 10px}
+.equipo .chip i{width:28px;height:28px;font-size:14px}
+.kpis{display:flex;gap:22px;margin-top:46px}
+.kpi{flex:1}
+.hip{perspective:1200px;height:150px;margin-bottom:18px;cursor:pointer}
+.hip-in{position:relative;height:100%;transition:transform .7s cubic-bezier(.2,.75,.2,1);transform-style:preserve-3d}
+.hip.girada .hip-in{transform:rotateY(180deg)}
+.hip-cara{position:absolute;inset:0;backface-visibility:hidden;border-radius:20px;padding:22px 26px;display:flex;gap:20px;align-items:center;
+  background:linear-gradient(180deg,var(--panel2),var(--panel));border:1px solid var(--line)}
+.hip-dorso{transform:rotateY(180deg);background:linear-gradient(135deg,#123d36,#14284a);border-color:#2dd4a755}
+.hip-n{font-size:46px;font-weight:900;color:var(--va);min-width:70px}
+.hip-t{font-size:23px;line-height:1.35}
+.formula{font-family:Consolas,"Cascadia Code",monospace;font-size:19px;background:#0c1430;border:1px solid var(--line);border-radius:12px;padding:12px 16px;margin-top:12px;color:#d9e1ff}
+.check{display:flex;align-items:center;gap:14px;font-size:21px;margin:12px 0;color:var(--suave)}
+.check > b{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;background:#11392f;color:var(--verde);font-size:20px}
+.dim{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.dim .card{padding:20px 22px}
+.tabla{width:100%;border-collapse:collapse;font-size:18px}
+.tabla th{text-align:left;color:var(--mut);font-weight:600;font-size:15px;letter-spacing:.06em;text-transform:uppercase;padding:8px 10px;border-bottom:1px solid var(--line)}
+.tabla td{padding:10px;border-bottom:1px solid #1f2a4c;color:var(--suave)}
+.tabla tr:hover td{background:#16204099}
+.paso{cursor:pointer;transition:.25s}
+.paso:hover{border-color:#5a6ca3;transform:translateY(-3px)}
+.paso .det{max-height:0;overflow:hidden;transition:max-height .5s ease;font-size:18px;color:var(--suave);line-height:1.45}
+.paso.abierto .det{max-height:260px;margin-top:14px}
+.paso h3{font-size:27px}
+.paso{min-height:300px}
+.paso-n{font-size:15px;font-weight:800;color:var(--mut);letter-spacing:.1em}
+.flecha{align-self:center;font-size:34px;color:#4a5b8f}
+.split{display:flex;height:74px;border-radius:16px;overflow:hidden;font-weight:700;font-size:20px}
+.split div{display:flex;align-items:center;justify-content:center;flex-direction:column;line-height:1.2}
+.matriz{display:grid;grid-template-columns:150px 1fr 1fr;grid-template-rows:56px 1fr 1fr;gap:12px;height:430px}
+.m-cel{border-radius:18px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:.25s;border:2px solid transparent}
+.m-cel:hover,.m-cel.sel{transform:scale(1.03);border-color:#fff}
+.m-cel .n{font-size:58px;font-weight:900;line-height:1}
+.m-cel .l{font-size:17px;margin-top:6px;font-weight:600}
+.m-cab{display:flex;align-items:center;justify-content:center;font-size:17px;color:var(--mut);font-weight:600;text-align:center}
+.dona{width:150px;height:150px;border-radius:50%;display:grid;place-items:center;position:relative}
+.dona::after{content:"";position:absolute;inset:16px;border-radius:50%;background:var(--panel)}
+.dona b{position:relative;z-index:1;font-size:32px}
+.reco{display:grid;grid-template-columns:repeat(2,1fr);gap:18px}
+.reco .card{display:flex;gap:20px;align-items:flex-start;padding:30px 30px;cursor:default}
+.reco h3{font-size:27px}
+.reco .leyenda{font-size:19px}
+.ico{width:54px;height:54px;border-radius:16px;display:grid;place-items:center;font-size:26px;flex:none}
+.cinta{align-self:flex-start;display:inline-flex;align-items:center;gap:10px;padding:8px 16px;border-radius:12px;background:#3a2a10;border:1px solid #ffc85766;color:var(--amarillo);font-weight:700;font-size:17px}
+.rango{width:100%;accent-color:var(--j);height:28px}
+.alerta-neg{margin-top:12px;font-size:18px;color:var(--amarillo);min-height:26px}
+.gauge{width:230px;height:115px;border-radius:230px 230px 0 0;position:relative;overflow:hidden;background:#0e1631}
+.gauge::before{content:"";position:absolute;inset:0;background:conic-gradient(from 270deg at 50% 100%,var(--j) 0deg calc(var(--g) * 1.8deg),transparent 0)}
+.gauge::after{content:"";position:absolute;left:28px;right:28px;bottom:0;height:87px;border-radius:174px 174px 0 0;background:var(--panel)}
+.gauge b{position:absolute;bottom:4px;left:0;right:0;text-align:center;font-size:36px;z-index:1}
+.ayuda{position:absolute;bottom:22px;left:88px;font-size:15px;color:var(--mut)}
+</style>
+</head>
+<body>
+<div id="escenario">
+
+<!-- 1 ─────────────────────────────────────────── -->
+<section class="slide" data-orador="M" data-titulo="Portada y pregunta de negocio" style="display:flex;flex-direction:column;justify-content:center">
+  <div class="kicker rv">Introducción al Análisis de Datos · UTN FRA · División 343</div>
+  <h1 class="rv" style="--d:1;margin-top:28px">¿Por qué se van<br><span class="grad">los clientes?</span></h1>
+  <p class="texto rv" style="--d:2;font-size:28px;max-width:1100px">Abandono de clientes en telecomunicaciones: ¿cómo se relacionan el <b>contrato</b>, la <b>antigüedad</b> y el <b>cargo mensual</b> con la baja?</p>
+  <div class="kpis">
+    <div class="kpi card rv" style="--d:3"><div class="big" data-contar="7043">0</div><div class="leyenda">clientes de Telco Customer Churn</div></div>
+    <div class="kpi card rv" style="--d:4"><div class="big va" data-contar="1869">0</div><div class="leyenda">se dieron de baja</div></div>
+    <div class="kpi card rv" style="--d:5"><div class="big va"><span data-contar="26.54" data-dec="2">0</span>%</div><div class="leyenda">tasa de baja de la cartera</div></div>
+  </div>
+  <div class="equipo rv" style="--d:6">
+    <span class="chip M"><i>M</i>Matías</span><span class="chip J"><i>J</i>Julián</span><span class="chip E"><i>E</i>Emmanuel</span>
+  </div>
+</section>
+
+<!-- 2 ─────────────────────────────────────────── -->
+<section class="slide" data-orador="M" data-titulo="Datos e hipótesis">
+  <div class="kicker rv">Los datos</div>
+  <h2 class="rv" style="--d:1">Una fila por cliente, tres preguntas para contrastar</h2>
+  <div class="fila">
+    <div class="col" style="flex:.92">
+      <div class="card rv" style="--d:2">
+        <div class="fila" style="gap:34px;align-items:flex-end">
+          <div><div class="big" data-contar="7043">0</div><div class="leyenda">filas (clientes)</div></div>
+          <div><div class="big">×&nbsp;21</div><div class="leyenda">variables originales</div></div>
+        </div>
+        <p class="texto" style="margin-top:18px">Dataset <b>estructurado</b>. Variable objetivo: <b class="va">Churn</b> (se fue / se quedó).</p>
+      </div>
+      <div class="card rv" style="--d:3;margin-top:20px">
+        <h3>Dos columnas calculadas</h3>
+        <div class="formula">ingreso_estimado = MonthlyCharges × tenure</div>
+        <div class="formula">diferencia_facturacion = TotalCharges − ingreso_estimado</div>
+        <p class="leyenda" style="margin-top:14px">Y un diccionario con los nombres en español (20 de 22 columnas). El análisis conserva los nombres originales.</p>
+      </div>
+    </div>
+    <div class="col">
+      <div class="hip rv" style="--d:3" onclick="this.classList.toggle('girada')">
+        <div class="hip-in"><div class="hip-cara"><div class="hip-n">H1</div><div class="hip-t">El <b>contrato mensual</b> abandona más que los de uno y dos años.</div></div>
+        <div class="hip-cara hip-dorso"><div class="hip-n verde">✓</div><div class="hip-t">Se contrasta en el análisis exploratorio: <b>42,71 %</b> frente a 11,27 % y 2,83 %.</div></div></div>
+      </div>
+      <div class="hip rv" style="--d:4" onclick="this.classList.toggle('girada')">
+        <div class="hip-in"><div class="hip-cara"><div class="hip-n">H2</div><div class="hip-t">Los clientes con <b>hasta 12 meses</b> abandonan más que los más antiguos.</div></div>
+        <div class="hip-cara hip-dorso"><div class="hip-n verde">✓</div><div class="hip-t"><b>47,44 %</b> frente a 17,13 % de los que superan los 12 meses.</div></div></div>
+      </div>
+      <div class="hip rv" style="--d:5" onclick="this.classList.toggle('girada')">
+        <div class="hip-in"><div class="hip-cara"><div class="hip-n">H3</div><div class="hip-t">Quienes pagan <b>más que la mediana</b> de cargo mensual abandonan más.</div></div>
+        <div class="hip-cara hip-dorso"><div class="hip-n verde">✓</div><div class="hip-t"><b>35,19 %</b> frente a 17,91 % (mediana: 70,35).</div></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3 ─────────────────────────────────────────── -->
+<section class="slide" data-orador="J" data-titulo="Limpieza: TotalCharges y atípicos">
+  <div class="kicker rv">Limpieza</div>
+  <h2 class="rv" style="--d:1">Dos decisiones clave, sin perder clientes</h2>
+  <div class="fila">
+    <div class="col card rv" style="--d:2">
+      <span class="tag" style="background:#3a1d12;color:var(--va)">TotalCharges</span>
+      <div class="fila" style="align-items:center;gap:22px;margin:26px 0 18px">
+        <div class="formula" style="font-size:30px;margin:0">"&nbsp;"&nbsp;× 11</div>
+        <div style="font-size:40px;color:#4a5b8f">→</div>
+        <div class="big verde">0</div>
+      </div>
+      <p class="texto">Se leía como texto: <b>11 espacios en blanco</b> (0,16 %). Los 11 clientes tienen <b>antigüedad cero</b>: todavía no acumularon cargos.</p>
+      <p class="leyenda" style="margin-top:14px">Decisión: imputar con 0 y conservarlos. Es una suposición documentada.</p>
+    </div>
+    <div class="col card rv" style="--d:3">
+      <span class="tag" style="background:#10303a;color:var(--j)">Valores atípicos · método IQR</span>
+      <svg viewBox="0 0 640 210" style="width:100%;margin-top:18px" aria-label="Diagrama de caja del cargo mensual">
+        <line x1="20" y1="120" x2="620" y2="120" stroke="#3a4a78" stroke-width="2"/>
+        <g font-size="15" fill="#9fabcf" text-anchor="middle">
+          <text x="20" y="150">−60</text><text x="170" y="150">0</text><text x="320" y="150">60</text><text x="470" y="150">120</text><text x="620" y="150">180</text>
+        </g>
+        <line x1="54.9" y1="40" x2="54.9" y2="120" stroke="#ff5d6c" stroke-dasharray="6 5" stroke-width="2"><title>Límite inferior: −46,02</title></line>
+        <line x1="598.4" y1="40" x2="598.4" y2="120" stroke="#ff5d6c" stroke-dasharray="6 5" stroke-width="2"><title>Límite superior: 171,38</title></line>
+        <text x="54.9" y="32" font-size="15" fill="#ff8a95" text-anchor="middle">−46,02</text>
+        <text x="598.4" y="32" font-size="15" fill="#ff8a95" text-anchor="middle">171,38</text>
+        <line x1="215.6" y1="85" x2="258.8" y2="85" stroke="#cfd8ff" stroke-width="2"/>
+        <line x1="394.6" y1="85" x2="466.9" y2="85" stroke="#cfd8ff" stroke-width="2"/>
+        <line x1="215.6" y1="70" x2="215.6" y2="100" stroke="#cfd8ff" stroke-width="2"><title>Mínimo observado: 18,25</title></line>
+        <line x1="466.9" y1="70" x2="466.9" y2="100" stroke="#cfd8ff" stroke-width="2"><title>Máximo observado: 118,75</title></line>
+        <rect x="258.8" y="62" width="135.8" height="46" rx="8" fill="#22c7b833" stroke="#22c7b8" stroke-width="2"><title>Q1 = 35,50 · Q3 = 89,85 · IQR = 54,35</title></rect>
+        <line x1="345.9" y1="62" x2="345.9" y2="108" stroke="#fff" stroke-width="3"><title>Mediana: 70,35</title></line>
+        <text x="326" y="186" font-size="16" fill="#c9d2ee" text-anchor="middle">Cargo mensual: todos los valores dentro de los límites</text>
+      </svg>
+      <div class="fila" style="gap:12px;margin-top:14px">
+        <span class="chip" style="padding:6px 14px">antigüedad: <b class="verde">&nbsp;0</b></span>
+        <span class="chip" style="padding:6px 14px">cargo mensual: <b class="verde">&nbsp;0</b></span>
+        <span class="chip" style="padding:6px 14px">cargo acumulado: <b class="verde">&nbsp;0</b></span>
+      </div>
+      <p class="leyenda" style="margin-top:12px">Atípico = fuera de Q1 − 1,5 × IQR o Q3 + 1,5 × IQR. Se conservan los 7.043 clientes.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 4 ─────────────────────────────────────────── -->
+<section class="slide" data-orador="E" data-titulo="Calidad y dataset limpio">
+  <div class="kicker rv">Calidad del dato</div>
+  <h2 class="rv" style="--d:1">Un dataset limpio y verificado</h2>
+  <div class="fila">
+    <div class="col">
+      <div class="card rv" style="--d:2">
+        <h3>Tres tipos mal interpretados por Pandas</h3>
+        <table class="tabla">
+          <tr><th>Variable</th><th>Pandas</th><th>En realidad</th></tr>
+          <tr><td>TotalCharges</td><td>texto</td><td>monto (continua)</td></tr>
+          <tr><td>SeniorCitizen</td><td>número 0/1</td><td>categoría sí / no</td></tr>
+          <tr><td>Contract</td><td>texto sin orden</td><td>ordinal (mensual &lt; 1 año &lt; 2 años)</td></tr>
+        </table>
+      </div>
+      <div class="card rv" style="--d:3;margin-top:20px;display:flex;gap:30px;align-items:center">
+        <div><div class="big"><span data-contar="7043">0</span> × 22</div><div class="leyenda">17 categóricas · 5 numéricas · 0 nulos</div></div>
+      </div>
+    </div>
+    <div class="col">
+      <div class="dim">
+        <div class="card rv" style="--d:3"><div class="mid verde">2</div><div class="leyenda"><b style="color:#fff">Completitud</b><br>sin datos faltantes</div></div>
+        <div class="card rv" style="--d:4"><div class="mid verde">6</div><div class="leyenda"><b style="color:#fff">Validez</b><br>valores permitidos</div></div>
+        <div class="card rv" style="--d:5"><div class="mid verde">8</div><div class="leyenda"><b style="color:#fff">Consistencia</b><br>sin contradicciones</div></div>
+        <div class="card rv" style="--d:6"><div class="mid" style="color:var(--amarillo)">22</div><div class="leyenda"><b style="color:#fff">Unicidad</b><br>filas iguales: clientes distintos, se conservan</div></div>
+      </div>
+      <div class="check rv" style="--d:7;margin-top:22px"><b>✓</b><span><b style="color:#fff">16 de 16</b> controles de calidad cumplidos</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- 5 ─────────────────────────────────────────── -->
+<section class="slide" data-orador="J" data-titulo="Análisis exploratorio">
+  <div class="kicker rv">Análisis exploratorio</div>
+  <h2 class="rv" style="--d:1">Las bajas no se reparten parejo</h2>
+  <div class="fila">
+    <div class="col" style="flex:1.55">
+      <div class="tabs rv" style="--d:2" data-grafico="eda">
+        <button class="tab sel" data-serie="contrato">Contrato</button>
+        <button class="tab" data-serie="antiguedad">Antigüedad</button>
+        <button class="tab" data-serie="internet">Internet</button>
+        <button class="tab" data-serie="pago">Método de pago</button>
+        <button class="tab" data-serie="cargo">Cargo mensual</button>
+      </div>
+      <div class="card rv" style="--d:3;padding:26px 30px 18px">
+        <div class="barras" id="g-eda"></div>
+        <p class="leyenda" id="g-eda-nota" style="margin-top:6px"></p>
+      </div>
+    </div>
+    <div class="col">
+      <div class="card rv" style="--d:4"><div class="big va"><span data-contar="88.55" data-dec="2">0</span>%</div><div class="leyenda">de todas las bajas ocurre en contrato mensual</div></div>
+      <div class="card rv" style="--d:5;margin-top:18px">
+        <div class="fila" style="gap:10px;flex-wrap:wrap"><span class="tag" style="background:#11392f;color:var(--verde)">H1 ✓</span><span class="tag" style="background:#11392f;color:var(--verde)">H2 ✓</span><span class="tag" style="background:#11392f;color:var(--verde)">H3 ✓</span></div>
+        <p class="leyenda" style="margin-top:12px">Respaldadas en la muestra: lo observado va en ese sentido. No es causalidad. Los segmentos se superponen: un mismo cliente puede ser nuevo, tener contrato mensual y fibra.</p>
+      </div>
+      <div class="card rv" style="--d:6;margin-top:18px"><div class="mid">0,826</div><div class="leyenda">Pearson entre antigüedad y cargo acumulado (Spearman 0,890)</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 6 ─────────────────────────────────────────── -->
+<section class="slide" data-orador="E" data-titulo="Lo que muestran los gráficos">
+  <div class="kicker rv">Visualización</div>
+  <h2 class="rv" style="--d:1">Quienes se van: nuevos y con cargos altos</h2>
+  <div class="fila">
+    <div class="col" style="flex:1.7">
+      <div class="tabs rv" style="--d:2" data-imagenes="viz">
+        <button class="tab sel" data-img="v1">Antigüedad</button>
+        <button class="tab" data-img="v2">Cargo mensual</button>
+      </div>
+      <div class="fig rv" style="--d:3">
+        <img id="v1" src="{{IMG_TENURE}}" alt="Histogramas de la antigüedad">
+        <img id="v2" src="{{IMG_CARGO}}" alt="Histogramas del cargo mensual" style="display:none">
+      </div>
+    </div>
+    <div class="col">
+      <div class="card rv" style="--d:3"><div class="fila" style="gap:16px;align-items:baseline"><div class="mid va">10</div><div class="mut">vs</div><div class="mid queda">38</div></div><div class="leyenda">meses de antigüedad mediana: se van / se quedan</div></div>
+      <div class="card rv" style="--d:4;margin-top:16px"><div class="fila" style="gap:16px;align-items:baseline"><div class="mid va">79,65</div><div class="mut">vs</div><div class="mid queda">64,43</div></div><div class="leyenda">cargo mensual mediano: se van / se quedan</div></div>
+      <div class="card rv" style="--d:5;margin-top:16px"><div class="fila" style="gap:16px;align-items:baseline"><div class="mid">21 %</div><div class="mut">·</div><div class="mid">362</div></div><div class="leyenda">lleva 6 meses o menos · llegan a los 72 meses. El promedio (32 meses) no describe a un cliente típico.</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- 7 ─────────────────────────────────────────── -->
+<section class="slide" data-orador="J" data-titulo="Regresión lineal: modelo y métricas">
+  <div class="kicker rv">Regresión lineal simple</div>
+  <h2 class="rv" style="--d:1">Estimar el cargo acumulado a partir de la antigüedad</h2>
+  <div class="fila">
+    <div class="col" style="flex:1.05">
+      <div class="fig rv" style="--d:2"><img src="{{IMG_REG_IZQ}}" alt="Recta ajustada sobre los clientes de prueba"></div>
+      <div class="formula rv" style="--d:3;font-size:22px;text-align:center;margin-top:16px">cargo = −196,86 + 76,73 × meses</div>
+      <p class="leyenda rv" style="--d:3;text-align:center;margin-top:10px">Partición 80/20 antes de ajustar · antigüedad sin estandarizar: la pendiente se lee en dinero por mes.</p>
+    </div>
+    <div class="col">
+      <div class="card rv" style="--d:3">
+        <h3>Estimación con la recta</h3>
+        <input type="range" min="0" max="72" value="24" class="rango" id="r-meses" aria-label="Meses de antigüedad">
+        <div class="fila" style="justify-content:space-between;align-items:baseline;margin-top:6px">
+          <div class="texto"><b id="r-m">24</b> meses</div>
+          <div class="mid" id="r-pred">0</div>
+        </div>
+        <div class="alerta-neg" id="r-alerta"></div>
+      </div>
+      <div class="fila" style="margin-top:18px;gap:18px">
+        <div class="card rv" style="--d:4;flex:none;display:flex;flex-direction:column;align-items:center">
+          <div class="gauge" style="--g:67"><b>0,670</b></div>
+          <div class="leyenda" style="text-align:center">R² en prueba<br>(no es un % de aciertos)</div>
+        </div>
+        <div class="card rv col" style="--d:5">
+          <div class="leyenda" style="margin:0 0 6px">Error absoluto medio (MAE)</div>
+          <div class="b-fila" style="grid-template-columns:110px 1fr 90px;margin:8px 0"><div class="b-et" style="font-size:16px">Modelo</div><div class="b-pista" style="height:24px"><div class="b-rel" data-ancho="44.6" style="background:var(--j)"></div></div><div class="b-val" style="font-size:18px">892</div></div>
+          <div class="b-fila" style="grid-template-columns:110px 1fr 90px;margin:8px 0"><div class="b-et" style="font-size:16px">Referencia</div><div class="b-pista" style="height:24px"><div class="b-rel" data-ancho="96" style="background:#5c6a94"></div></div><div class="b-val" style="font-size:18px">1.920</div></div>
+          <p class="leyenda" style="font-size:15px;margin-top:4px">Entrenamiento R² 0,686 · prueba 0,670: sin sobreajuste.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 8 ─────────────────────────────────────────── -->
+<section class="slide" data-orador="E" data-titulo="Diagnóstico de la regresión">
+  <div class="kicker rv">Diagnóstico de la regresión</div>
+  <h2 class="rv" style="--d:1">Dónde acierta y dónde falla</h2>
+  <div class="fila">
+    <div class="col" style="flex:1.05">
+      <div class="fig rv" style="--d:2"><img src="{{IMG_REG_DER}}" alt="Residuos según la antigüedad"></div>
+      <p class="leyenda rv" style="--d:3">Los residuos se abren en abanico: el error en plata crece con la antigüedad.</p>
+    </div>
+    <div class="col">
+      <div class="card rv" style="--d:3">
+        <h3>Error relativo por tramo (% del cargo real)</h3>
+        <div class="barras" id="g-tramos"></div>
+        <p class="leyenda" style="margin-top:6px">En proporción, el error es mayor en los clientes nuevos y se estabiliza desde los 13 meses.</p>
+      </div>
+      <div class="fila" style="gap:16px;margin-top:16px">
+        <div class="card rv col" style="--d:4"><div class="mid" style="color:var(--amarillo)">202</div><div class="leyenda">estimaciones negativas (14,3 %), con 0 a 2 meses. Convendría acotarlas en 0.</div></div>
+        <div class="card rv col" style="--d:5"><div class="fila" style="gap:10px;align-items:baseline"><div class="mid">76,73</div><div class="mut">&gt;</div><div class="mid mut">64,76</div></div><div class="leyenda">pendiente vs. cargo mensual medio: los clientes antiguos pagan más por mes. Es una asociación, no una causa.</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 9 ─────────────────────────────────────────── -->
+<section class="slide" data-orador="M" data-titulo="Preparación para el modelado">
+  <div class="kicker rv">Preparación para el modelado de clasificación</div>
+  <h2 class="rv" style="--d:1">Sin fuga de datos: la prueba nunca se usa para aprender</h2>
+  <div class="split rv" style="--d:2;margin-bottom:28px">
+    <div style="width:80%;background:linear-gradient(90deg,#2b3d74,#3c56a0)">Entrenamiento · 5.634 clientes<small style="font-weight:500;font-size:15px;color:#c9d2ee">26,5 % de bajas</small></div>
+    <div style="width:20%;background:linear-gradient(90deg,#7a3a1f,#b4532a)">Prueba · 1.409<small style="font-weight:500;font-size:15px;color:#ffd9c6">26,5 % de bajas</small></div>
+  </div>
+  <div class="fila" style="gap:14px">
+    <div class="card paso abierto col rv" style="--d:3"><div class="paso-n">PASO 1</div><h3 style="margin-top:6px">Partición 80/20</h3><p class="leyenda">Estratificada, semilla 42.</p><div class="det">Se parte antes de ajustar nada. La estratificación mantiene la misma proporción de bajas en los dos conjuntos.</div></div>
+    <div class="flecha rv" style="--d:3">›</div>
+    <div class="card paso abierto col rv" style="--d:4"><div class="paso-n">PASO 2</div><h3 style="margin-top:6px">One-Hot</h3><p class="leyenda">15 variables → 40 columnas.</p><div class="det">Una columna 0/1 por categoría, para variables sin orden (por ejemplo, el método de pago).</div></div>
+    <div class="flecha rv" style="--d:4">›</div>
+    <div class="card paso abierto col rv" style="--d:5"><div class="paso-n">PASO 3</div><h3 style="margin-top:6px">Ordinal</h3><p class="leyenda">Contrato: 0 · 1 · 2.</p><div class="det">Mensual = 0, un año = 1, dos años = 2: el contrato tiene un orden natural.</div></div>
+    <div class="flecha rv" style="--d:5">›</div>
+    <div class="card paso abierto col rv" style="--d:6"><div class="paso-n">PASO 4</div><h3 style="margin-top:6px">Estandarización</h3><p class="leyenda">5 numéricas: media 0, desvío 1.</p><div class="det">La media y el desvío se calculan solo con entrenamiento; la prueba únicamente se transforma.</div></div>
+  </div>
+  <div class="fila rv" style="--d:7;margin-top:26px;align-items:center;gap:20px">
+    <div class="cinta">fit → solo entrenamiento · transform → prueba</div>
+    <div class="texto">Resultado: <b>46 variables</b> por cliente. Verificado en la tarea 24.</div>
+  </div>
+</section>
+
+<!-- 10 ────────────────────────────────────────── -->
+<section class="slide" data-orador="E" data-titulo="Clasificación y factores de baja">
+  <div class="kicker rv">Regresión logística</div>
+  <h2 class="rv" style="--d:1">Qué características empujan hacia la baja</h2>
+  <div class="fila">
+    <div class="col" style="flex:1.55">
+      <div class="tabs rv" style="--d:3" data-grafico="fac">
+        <button class="tab sel" data-serie="antiguedad">Antigüedad</button>
+        <button class="tab" data-serie="contrato">Contrato</button>
+        <button class="tab" data-serie="internet">Internet</button>
+        <button class="tab" data-serie="pago">Método de pago</button>
+        <button class="tab" data-serie="factura">Factura electrónica</button>
+      </div>
+      <div class="card rv" style="--d:4;padding:26px 30px 18px"><div class="barras" id="g-fac"></div></div>
+    </div>
+    <div class="col">
+      <div class="card rv" style="--d:4"><h3>Probabilidad media de baja</h3><p class="leyenda">Fijamos cada característica en todos los clientes de entrenamiento y calculamos qué predice el modelo. Base actual: 26,5 %.</p></div>
+      <div class="card rv" style="--d:5;margin-top:16px"><h3>Por qué no leemos los coeficientes directamente</h3><p class="leyenda">Siete columnas repiten la misma información y las variables de facturación son combinaciones exactas entre sí.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- 11 ────────────────────────────────────────── -->
+<section class="slide" data-orador="M" data-titulo="Evaluación de la clasificación">
+  <div class="kicker rv">Evaluación sobre 1.409 clientes de prueba</div>
+  <h2 class="rv" style="--d:1">80,55 % de exactitud… pero detecta el 56 % de las bajas</h2>
+  <div class="fila">
+    <div class="col" style="flex:1.25">
+      <div class="matriz rv" style="--d:2" id="matriz">
+        <div></div><div class="m-cab">Predice “se queda”</div><div class="m-cab">Predice “se va”</div>
+        <div class="m-cab">Realmente<br>se queda</div>
+        <div class="m-cel" style="background:#1d4f86" data-exp="Verdaderos negativos: se quedan y el modelo lo predice."><div class="n">926</div><div class="l">VN</div></div>
+        <div class="m-cel" style="background:#2b3a62" data-exp="Falsos positivos: se quedan, pero el modelo da una alerta. Costo: una acción de retención innecesaria."><div class="n">109</div><div class="l">FP</div></div>
+        <div class="m-cab">Realmente<br>se va</div>
+        <div class="m-cel" style="background:#6b2f1c" data-exp="Falsos negativos: se van y el modelo no los detecta. Costo: un cliente perdido sin contactar."><div class="n">165</div><div class="l">FN</div></div>
+        <div class="m-cel" style="background:#b4532a" data-exp="Verdaderos positivos: se van y el modelo los detecta."><div class="n">209</div><div class="l">VP</div></div>
+      </div>
+      <p class="texto rv" id="m-exp" style="--d:3;margin-top:16px;min-height:66px;font-size:20px">Cada celda cuenta clientes de prueba según lo que el modelo predijo y lo que realmente pasó.</p>
+    </div>
+    <div class="col">
+      <div class="card rv" style="--d:3">
+        <div class="b-fila" style="grid-template-columns:120px 1fr 96px;margin:6px 0"><div class="b-et" style="font-size:17px">Modelo</div><div class="b-pista" style="height:26px"><div class="b-rel" data-ancho="80.55" style="background:var(--j)"></div></div><div class="b-val" style="font-size:19px">80,55 %</div></div>
+        <div class="b-fila" style="grid-template-columns:120px 1fr 96px;margin:6px 0"><div class="b-et" style="font-size:17px">Línea base</div><div class="b-pista" style="height:26px"><div class="b-rel" data-ancho="73.46" style="background:#5c6a94"></div></div><div class="b-val" style="font-size:19px">73,46 %</div></div>
+        <p class="leyenda">Exactitud. La línea base siempre responde “se queda”. Mejora real: 7 puntos, unos 100 aciertos más.</p>
+      </div>
+      <div class="fila" style="margin-top:18px;gap:18px">
+        <div class="card rv col" style="--d:4;display:flex;flex-direction:column;align-items:center"><div class="dona" style="background:conic-gradient(var(--va) 0 55.9%,#0e1631 0)"><b>55,9 %</b></div><div class="leyenda" style="text-align:center">recall: bajas detectadas</div></div>
+        <div class="card rv col" style="--d:5;display:flex;flex-direction:column;align-items:center"><div class="dona" style="background:conic-gradient(var(--j) 0 65.7%,#0e1631 0)"><b>65,7 %</b></div><div class="leyenda" style="text-align:center">precisión: alertas correctas</div></div>
+      </div>
+      <p class="leyenda rv" style="--d:6;margin-top:16px">De 374 bajas reales detecta 209 y deja pasar 165. De 318 alertas, 209 son bajas reales y 109 no. El dataset no trae costos de retención: sirve para priorizar clientes en riesgo, no para decidir automáticamente.</p>
+    </div>
+  </div>
+</section>
+
+<!-- 12 ────────────────────────────────────────── -->
+<section class="slide" data-orador="J" data-titulo="Conclusiones y recomendaciones">
+  <div class="kicker rv">Conclusiones</div>
+  <h2 class="rv" style="--d:1">Clientes nuevos, contrato mensual y fibra óptica</h2>
+  <div class="reco">
+    <div class="card rv" style="--d:2"><div class="ico" style="background:#2a2350;color:var(--m)">①</div><div><h3>Reforzar el primer año</h3><p class="leyenda">47,44 % de baja con hasta 12 meses.</p></div></div>
+    <div class="card rv" style="--d:3"><div class="ico" style="background:#123b38;color:var(--j)">②</div><div><h3>Del contrato mensual a uno de mayor plazo</h3><p class="leyenda">Concentra el 88,55 % de las bajas.</p></div></div>
+    <div class="card rv" style="--d:4"><div class="ico" style="background:#3d1d2a;color:var(--e)">③</div><div><h3>Revisar la propuesta de la fibra óptica</h3><p class="leyenda">41,89 % de baja frente a 18,96 % en DSL.</p></div></div>
+    <div class="card rv" style="--d:5"><div class="ico" style="background:#3a2a10;color:var(--amarillo)">④</div><div><h3>Promover el pago automático</h3><p class="leyenda">Y usar el modelo para ordenar a los clientes por riesgo.</p></div></div>
+  </div>
+  <div class="fila rv" style="--d:6;margin-top:24px;align-items:center;justify-content:space-between">
+    <div><div class="cinta">Son asociaciones: antes de generalizar, un piloto con grupo de control</div>
+      <p class="leyenda" style="margin-top:12px">Faltan los costos de contactar frente a los de perder un cliente, y fechas para validar un horizonte futuro.</p></div>
+  </div>
+  <div class="rv" style="--d:7;margin-top:26px;font-size:46px;font-weight:800" ><span class="grad">¡Gracias!</span></div>
+</section>
+
+</div>
+
+<div id="progreso"></div>
+<div id="pie">
+  <div class="pie-izq">
+    <button class="nav" id="ant" aria-label="Anterior">‹</button>
+    <span id="contador">1 / 12</span>
+    <button class="nav" id="sig" aria-label="Siguiente">›</button>
+    <span id="titulo-actual" style="max-width:220px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"></span>
+  </div>
+  <div id="oradores">
+    <button class="orb M" data-o="M"><i>M</i>Matías<span class="toca"></span></button>
+    <button class="orb J" data-o="J"><i>J</i>Julián<span class="toca"></span></button>
+    <button class="orb E" data-o="E"><i>E</i>Emmanuel<span class="toca"></span></button>
+  </div>
+  <div class="pie-der"><span id="estado-sala"></span></div>
+</div>
+
+<script>
+const NOMBRES = {M:"Matías", J:"Julián", E:"Emmanuel"};
+const fmt = (v, dec=0) => v.toLocaleString("es-AR", {minimumFractionDigits:dec, maximumFractionDigits:dec});
+
+/* ---------- datos de los gráficos (salen del informe y del notebook) ---------- */
+const BASE_EDA = 26.54, BASE_FAC = 26.5;
+const EDA = {
+  contrato:[["Mensual",42.71],["Un año",11.27],["Dos años",2.83]],
+  antiguedad:[["Hasta 12 meses",47.44],["Más de 12 meses",17.13]],
+  internet:[["Fibra óptica",41.89],["DSL",18.96],["Sin internet",7.40]],
+  pago:[["Cheque electrónico",45.29],["Cheque por correo",19.11],["Transferencia autom.",16.71],["Tarjeta autom.",15.24]],
+  cargo:[["Sobre la mediana",35.19],["Hasta la mediana",17.91]],
+};
+const NOTA_EDA = {
+  contrato:"Tasa de baja dentro de cada contrato. El mensual concentra el 88,55 % de todas las bajas.",
+  antiguedad:"El primer año es la etapa de mayor riesgo (H2).",
+  internet:"La fibra óptica duplica la tasa de DSL.",
+  pago:"El cheque electrónico triplica a los pagos automáticos.",
+  cargo:"Corte en la mediana del cargo mensual: 70,35 (H3).",
+};
+const FAC = {
+  antiguedad:[["1 desvío menos",44.7],["Antigüedad actual",26.5],["1 desvío más",12.4]],
+  contrato:[["Mensual",29.8],["Un año",19.9],["Dos años",12.4]],
+  internet:[["Fibra óptica",34.4],["DSL",16.7]],
+  pago:[["Cheque electrónico",29.3],["Cheque por correo",25.0],["Transferencia autom.",24.0],["Tarjeta autom.",23.5]],
+  factura:[["Con factura electrónica",28.2],["Sin factura electrónica",23.1]],
+};
+const TRAMOS = [["0 a 12 meses",70],["13 a 24 meses",40],["25 a 48 meses",40],["49 a 72 meses",38]];
+function barras(cont, serie, base, max, unidad="%"){
+  const el = document.getElementById(cont);
+  el.innerHTML = serie.map(([et,v]) =>
+    `<div class="b-fila"><div class="b-et">${et}</div><div class="b-pista"><div class="b-rel" style="width:${v/max*100}%;background:${base!==null && v>base ? "var(--va)" : "var(--queda)"}"></div></div><div class="b-val">${fmt(v, v%1 ? (Math.round(v*100)%10 ? 2 : 1) : 0)} ${unidad}</div></div>`
+  ).join("") + (base!==null ? `<div class="b-base" style="left:calc(270px + 16px + (100% - 270px - 16px - 96px - 16px) * ${base/max})"><span>base ${fmt(base, base%1?1:0)} %</span></div>` : "");
+}
+function pintarEda(s){ barras("g-eda", EDA[s], BASE_EDA, 50); document.getElementById("g-eda-nota").textContent = NOTA_EDA[s]; }
+function pintarFac(s){ barras("g-fac", FAC[s], BASE_FAC, 50); }
+document.querySelectorAll('.tabs[data-grafico]').forEach(t => t.addEventListener("click", e => {
+  const b = e.target.closest(".tab"); if(!b) return;
+  t.querySelectorAll(".tab").forEach(x => x.classList.toggle("sel", x===b));
+  (t.dataset.grafico==="eda" ? pintarEda : pintarFac)(b.dataset.serie);
+}));
+document.querySelectorAll('.tabs[data-imagenes]').forEach(t => t.addEventListener("click", e => {
+  const b = e.target.closest(".tab"); if(!b) return;
+  t.querySelectorAll(".tab").forEach(x => { x.classList.toggle("sel", x===b); document.getElementById(x.dataset.img).style.display = x===b ? "block" : "none"; });
+}));
+
+/* regresión: calculadora */
+const rango = document.getElementById("r-meses");
+function calc(){
+  const m = +rango.value, y = -196.86 + 76.73*m;
+  document.getElementById("r-m").textContent = m;
+  document.getElementById("r-pred").textContent = fmt(y, 0);
+  document.getElementById("r-pred").style.color = y < 0 ? "var(--amarillo)" : "var(--txt)";
+  document.getElementById("r-alerta").textContent = y < 0 ? "Estimación negativa: la recta no sirve para clientes tan nuevos." : "cargo acumulado estimado";
+}
+rango.addEventListener("input", calc); calc();
+
+/* matriz */
+document.querySelectorAll(".m-cel").forEach(c => {
+  const ver = () => { document.querySelectorAll(".m-cel").forEach(x => x.classList.toggle("sel", x===c)); document.getElementById("m-exp").textContent = c.dataset.exp; };
+  c.addEventListener("mouseenter", ver); c.addEventListener("click", ver);
+});
+/* pasos */
+document.querySelectorAll(".paso").forEach(p => p.addEventListener("click", () => p.classList.toggle("abierto")));
+/* ---------- navegación ---------- */
+const todas = [...document.querySelectorAll(".slide")];
+const principales = todas;
+principales.forEach((s,i) => {
+  s.dataset.n = i+1;
+  const os = (s.dataset.orador||"").split(" ").filter(Boolean);
+  if(os.length){
+    const d = document.createElement("div"); d.className = "orador";
+    d.innerHTML = "Presenta " + os.map(o => `<span class="chip ${o}"><i>${o}</i>${NOMBRES[o]}</span>`).join("");
+    s.appendChild(d);
+  }
+});
+let idx = 0;
+const lista = () => principales;
+
+function contar(s){
+  s.querySelectorAll("[data-contar]").forEach(el => {
+    const fin = +el.dataset.contar, dec = +(el.dataset.dec||0), t0 = Date.now(), dur = 1100;
+    clearInterval(el._t);
+    el.textContent = fmt(0, dec);
+    el._t = setInterval(() => {
+      const p = Math.min(1, (Date.now()-t0)/dur), e = 1-Math.pow(1-p,3);
+      el.textContent = fmt(fin*e, dec);
+      if(p >= 1) clearInterval(el._t);
+    }, 30);
+  });
+}
+function animarBarrasFijas(s){
+  s.querySelectorAll(".b-rel[data-ancho]").forEach(b => { b.style.width = b.dataset.ancho + "%"; b.style.animation = "none"; b.offsetHeight; b.style.animation = ""; });
+}
+function mostrar(nuevo, dir=1){
+  const l = lista();
+  nuevo = Math.max(0, Math.min(l.length-1, nuevo));
+  todas.forEach(s => s.classList.remove("activa","atras"));
+  const s = l[nuevo];
+  // reiniciar animaciones de entrada
+  s.querySelectorAll(".rv").forEach(r => { r.style.animation = "none"; r.offsetHeight; r.style.animation = ""; });
+  s.classList.add("activa");
+  idx = nuevo;
+  contar(s); animarBarrasFijas(s);
+  if(s.querySelector("#g-eda")) pintarEda(s.querySelector('[data-grafico="eda"] .tab.sel').dataset.serie);
+  if(s.querySelector("#g-fac")) pintarFac(s.querySelector('[data-grafico="fac"] .tab.sel').dataset.serie);
+  if(s.querySelector("#g-tramos")) barras("g-tramos", TRAMOS, null, 80);
+  document.getElementById("contador").textContent = `${idx+1} / ${l.length}`;
+  document.getElementById("titulo-actual").textContent = s.dataset.titulo || "";
+  document.getElementById("progreso").style.width = ((idx+1)/l.length*100)+"%";
+  const toca = (s.dataset.orador||"").split(" ");
+  document.querySelectorAll(".orb").forEach(b => b.classList.toggle("letoca", toca.includes(b.dataset.o)));
+  history.replaceState(null, "", "#"+(idx+1));
+}
+function siguiente(){ mostrar(idx+1, 1); }
+function anterior(){ mostrar(idx-1, -1); }
+
+/* ---------- oradores (solo visual) ---------- */
+document.querySelectorAll(".orb").forEach(b => b.addEventListener("click", () => {
+  if(sincronizado){ tomarControl(b.dataset.o); return; }
+  const ya = b.classList.contains("activo");
+  document.querySelectorAll(".orb").forEach(x => x.classList.remove("activo"));
+  if(!ya) b.classList.add("activo");
+}));
+
+/* ---------- teclado y controles ---------- */
+document.getElementById("sig").addEventListener("click", siguiente);
+document.getElementById("ant").addEventListener("click", anterior);
+document.addEventListener("keydown", e => {
+  if(e.target.tagName==="INPUT") { if(e.key==="Escape") e.target.blur(); else return; }
+  const k = e.key.toLowerCase();
+  if(sincronizado && !soyYo()){ const permitida = k === "f" || (!INVITADO && ["1","2","3"].includes(k)); if(!permitida) return; }
+  if(["arrowright","pagedown"," ","enter"].includes(k)) { e.preventDefault(); siguiente(); }
+  else if(["arrowleft","pageup","backspace"].includes(k)) { e.preventDefault(); anterior(); }
+  else if(k==="home") mostrar(0);
+  else if(k==="end") mostrar(lista().length-1);
+  else if(k==="f") { document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen().catch(()=>{}); }
+  else if(["1","2","3"].includes(k)) document.querySelectorAll(".orb")[+k-1].click();
+});
+
+/* ---------- escala 16:9 ---------- */
+const esc = document.getElementById("escenario");
+function escalar(){
+  const alto = innerHeight - 54, s = Math.min(innerWidth/1600, alto/900);
+  esc.style.top = (alto/2) + "px";
+  esc.style.transform = `translate(-50%,-50%) scale(${s})`;
+}
+addEventListener("resize", escalar); escalar();
+
+/* ---------- inicio ---------- */
+const h = location.hash.slice(1);
+mostrar(((+h)||1)-1);
+
+/* ---------- sala compartida (solo si la dirección trae ?sala=) ---------- */
+const params = new URLSearchParams(location.search);
+const SALA = params.get("sala"), YO = (params.get("yo")||"").toUpperCase();
+const sincronizado = !!SALA;
+const INVITADO = sincronizado && !["M","J","E"].includes(YO);
+let controla = null, ultimoEnviado = null, versionVista = -1;
+const soyYo = () => sincronizado && controla === YO;
+
+function capturar(){
+  return {
+    i: idx,
+    t: [...document.querySelectorAll(".tabs")].map(t => [...t.querySelectorAll(".tab")].findIndex(b => b.classList.contains("sel"))),
+    h: [...document.querySelectorAll(".hip")].map(x => x.classList.contains("girada") ? 1 : 0),
+    r: +rango.value,
+    p: [...document.querySelectorAll(".paso")].map(x => x.classList.contains("abierto") ? 1 : 0),
+    c: [...document.querySelectorAll(".m-cel")].findIndex(x => x.classList.contains("sel"))
+  };
+}
+function aplicar(e){
+  if(e.i !== idx) mostrar(e.i);
+  document.querySelectorAll(".tabs").forEach((t,k) => {
+    const bs = t.querySelectorAll(".tab"), n = e.t[k];
+    if(n >= 0 && bs[n] && !bs[n].classList.contains("sel")) bs[n].click();
+  });
+  document.querySelectorAll(".hip").forEach((x,k) => x.classList.toggle("girada", !!e.h[k]));
+  if(+rango.value !== e.r){ rango.value = e.r; rango.dispatchEvent(new Event("input")); }
+  document.querySelectorAll(".paso").forEach((x,k) => x.classList.toggle("abierto", !!e.p[k]));
+  const cel = document.querySelectorAll(".m-cel")[e.c];
+  if(cel && !cel.classList.contains("sel")) cel.click();
+}
+function pintarControl(ok = true){
+  document.body.classList.toggle("espectador", sincronizado && !soyYo());
+  document.body.classList.toggle("invitado", INVITADO);
+  document.querySelectorAll(".orb").forEach(b => b.classList.toggle("activo", b.dataset.o === controla));
+  document.getElementById("estado-sala").innerHTML = ok
+    ? `<span style="color:var(--verde)">●</span> Controla ${NOMBRES[controla] || "—"}${INVITADO ? " · invitado" : ""}`
+    : `<span style="color:var(--rojo)">●</span> Sin conexión`;
+}
+async function llamar(cuerpo){
+  const r = await fetch("/api/estado?sala=" + encodeURIComponent(SALA), cuerpo
+    ? {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify(cuerpo)}
+    : {cache:"no-store"});
+  if(!r.ok && r.status !== 409) throw new Error(r.status);
+  return r.json();
+}
+function recibir(d){
+  const cambioControl = d.controlador !== controla;
+  controla = d.controlador;
+  if(cambioControl && soyYo()) ultimoEnviado = JSON.stringify(capturar());
+  if(d.v !== versionVista){
+    versionVista = d.v;
+    if(d.estado && !soyYo()) aplicar(d.estado);
+  }
+  pintarCursor(d);
+}
+async function publicar(){
+  if(!soyYo()) return;
+  const e = JSON.stringify(capturar());
+  if(e === ultimoEnviado) return;
+  ultimoEnviado = e;
+  try { recibir(await llamar({accion:"estado", quien:YO, estado:JSON.parse(e)})); pintarControl(); } catch(_) {}
+}
+async function tomarControl(quien){
+  if(INVITADO) return;
+  try {
+    await publicar();
+    recibir(await llamar({accion:"control", quien, de:YO}));
+    pintarControl();
+  } catch(_) { pintarControl(false); }
+}
+let sondeando = false;
+async function sondear(){
+  if(sondeando) return;
+  sondeando = true;
+  try { recibir(await llamar()); pintarControl(); } catch(_) { pintarControl(false); }
+  sondeando = false;
+}
+
+/* cursor en vivo de quien presenta */
+const RESALTABLES = ".card, .big, .mid, .b-fila, .formula, .cinta, .tag, .check, .dona, .gauge, .fig, .hip, .paso, .m-cel, .tab, .tabla tr, .split > div";
+let remotoClave = "", ultimoObjetivo = null;
+function indiceResaltable(){
+  const s = lista()[idx], el = ultimoObjetivo && ultimoObjetivo.closest ? ultimoObjetivo.closest(RESALTABLES) : null;
+  if(!s || !el || !s.contains(el)) return -1;
+  return [...s.querySelectorAll(RESALTABLES)].indexOf(el);
+}
+function resaltarRemoto(h){
+  const clave = h + ":" + idx;
+  if(clave === remotoClave) return;
+  remotoClave = clave;
+  document.querySelectorAll(".resalte").forEach(e => e.classList.remove("resalte"));
+  if(h < 0) return;
+  const el = lista()[idx].querySelectorAll(RESALTABLES)[h];
+  if(el) el.classList.add("resalte");
+}
+const cursorEl = document.createElement("div");
+cursorEl.id = "cursor-remoto";
+cursorEl.innerHTML = '<svg viewBox="0 0 24 24"><path d="M3 2l17 8-7 2-3 7z" fill="var(--cur)" stroke="#0a0f1f" stroke-width="1.5" stroke-linejoin="round"/></svg><span></span>';
+document.getElementById("escenario").appendChild(cursorEl);
+const COLORES = {M:"var(--m)", J:"var(--j)", E:"var(--e)"};
+function pintarCursor(d){
+  const c = d.cursor;
+  resaltarRemoto(c && c.q === controla && !soyYo() && c.x >= 0 && (d.ahora - c.t) < 20000 ? (c.h ?? -1) : -1);
+  const vivo = c && c.q === controla && !soyYo() && c.x >= 0 && (d.ahora - c.t) < 3000;
+  if(!vivo){ cursorEl.classList.remove("v"); return; }
+  cursorEl.style.setProperty("--cur", COLORES[c.q] || "var(--m)");
+  cursorEl.lastElementChild.textContent = NOMBRES[c.q] || "";
+  cursorEl.style.transform = `translate(${c.x*1600}px, ${c.y*900}px)`;
+  cursorEl.classList.add("v");
+}
+let cursorPendiente = null, cursorEnVuelo = false, cursorUltimo = "";
+document.addEventListener("mousemove", ev => {
+  if(!soyYo()) return;
+  ultimoObjetivo = ev.target;
+  const r = document.getElementById("escenario").getBoundingClientRect();
+  const x = (ev.clientX - r.left) / r.width, y = (ev.clientY - r.top) / r.height;
+  cursorPendiente = (x < 0 || x > 1 || y < 0 || y > 1) ? {x:-1, y:-1} : {x:+x.toFixed(4), y:+y.toFixed(4)};
+  cursorPendiente.moved = true;
+});
+document.addEventListener("mouseleave", () => { if(soyYo()){ cursorPendiente = {x:-1, y:-1}; ultimoObjetivo = null; } });
+async function enviarCursor(){
+  if(!soyYo() || !cursorPendiente || cursorEnVuelo) return;
+  const h = cursorPendiente.x < 0 ? -1 : indiceResaltable();
+  const k = JSON.stringify([cursorPendiente.x, cursorPendiente.y, h]);
+  if(k === cursorUltimo) return;
+  cursorUltimo = k; cursorEnVuelo = true;
+  try { await llamar({accion:"cursor", quien:YO, x:cursorPendiente.x, y:cursorPendiente.y, h}); } catch(_) {}
+  cursorEnVuelo = false;
+}
+async function iniciarSala(){
+  try {
+    const d = await llamar();
+    controla = d.controlador; versionVista = d.v;
+    if(d.estado) aplicar(d.estado);
+    ultimoEnviado = d.estado ? JSON.stringify(capturar()) : null;
+    pintarControl();
+  } catch(_) { pintarControl(false); }
+  setInterval(sondear, 150);
+  setInterval(publicar, 80);
+  setInterval(enviarCursor, 100);
+}
+if(sincronizado) iniciarSala();
+</script>
+</body>
+</html>
